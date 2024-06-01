@@ -4,3 +4,5 @@
 * Templ `https://github.com/a-h/templ`
 * TailwindCss `https://tailwindcss.com/blog/standalone-cli`
 * Ganache `https://archive.trufflesuite.com/ganache/`
+* Solidity `https://docs.soliditylang.org/en/v0.8.2/installing-solidity.html#linux-packages`
+* Abigen `go install github.com/ethereum/go-ethereum/cmd/abigen@latest`
