@@ -1,4 +1,5 @@
 bin/
 .env
+assets/style.css
 
 **_templ.go

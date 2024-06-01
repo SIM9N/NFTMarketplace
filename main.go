@@ -17,8 +17,10 @@ func main() {
 	}
 
 	port := os.Getenv("LISTEN_ADDRESS")
-	
+
 	mux := http.NewServeMux()
+
+	mux.Handle("GET /assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets"))))
 
 	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
 		view.Index().Render(context.Background(), w)
