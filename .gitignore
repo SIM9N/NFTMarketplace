@@ -3,4 +3,5 @@ bin/
 assets/style.css
 contracts/gen
 **_templ.go
-settings.json
+.vscode/
+node_modules/
