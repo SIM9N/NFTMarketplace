@@ -80,7 +80,7 @@ func main() {
 	
 	auth := PrepareTransaction(client, address, privateKey)
 
-	txAddr, tx, _, err := NFT721.DeployNFT721(auth, client)
+	txAddr, tx, _, err := NFT721.DeployNFT721(auth, client, address)
 	if err != nil {
 		log.Fatalf("Failed to deploy contract: %v", err)
 	}
