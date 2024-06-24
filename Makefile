@@ -6,6 +6,9 @@ build-app:
 	@tailwindcss -i view/styles.css -o assets/styles.css -m
 	@go build -o bin/app/main ./cmd/app/main.go 
 
+run-dev:
+	@air
+
 deploy-contract: compile-contract
 	@go build -o bin/deploy/$(C) ./cmd/deploy/$(C).go 
 	@./bin/deploy/$(C)
