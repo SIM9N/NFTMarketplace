@@ -5,3 +5,4 @@ contracts/gen
 **_templ.go
 .vscode/
 node_modules/
+tmp/
