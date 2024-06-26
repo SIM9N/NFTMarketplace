@@ -1,0 +1,34 @@
+package component
+
+templ Index() {
+  <!DOCTYPE html>
+  <html lang="en" data-theme="dark">
+    <head>
+      <meta charset="UTF-8"></meta>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+      <link href="assets/styles.css" rel="stylesheet"></link>
+      <script src="assets/htmx.min.js" type="application/javascript"></script>
+      <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+    </head>
+    <body>
+      <div class="navbar bg-base-100">
+        <div class="navbar-start">
+          <a href="/" class="btn btn-ghost text-xl">NFT Marketplace</a>
+        </div>
+
+        <div class="navbar-center">
+          <ul class="menu menu-horizontal bg-base-200 rounded-box">
+            <li><a>Market</a></li>
+            <li><a>My NFTs</a></li>
+          </ul>
+        </div>
+
+        <div class="navbar-end">
+          <a hx-post="/login" class="btn btn-primary">Connect</a>
+        </div>
+      </div>
+
+      { children...}
+    </body>
+  </html>
+}

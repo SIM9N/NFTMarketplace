@@ -3,7 +3,7 @@ run-app: build-app
 
 build-app:
 	@templ generate components
-	@tailwindcss -i view/styles.css -o assets/styles.css -m
+	@tailwindcss -i components/styles.css -o assets/styles.css -m
 	@go build -o bin/app/main ./cmd/app/main.go 
 
 run-dev:

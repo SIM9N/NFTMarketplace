@@ -1,6 +1,6 @@
 bin/
 .env
-assets/style.css
+assets/styles.css
 contracts/gen
 **_templ.go
 .vscode/

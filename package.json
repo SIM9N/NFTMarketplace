@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "daisyui": "^4.12.8",
     "hardhat": "^2.22.5"
   },
   "dependencies": {
