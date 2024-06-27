@@ -9,18 +9,17 @@ templ Index() {
       <link href="assets/styles.css" rel="stylesheet"></link>
       <script src="assets/htmx.min.js" type="application/javascript"></script>
       <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+      @Scripts()
     </head>
 
     <body class="w-screen h-screen">
-      <div id="main">
-        @Navbar()
-      </div>      
+      @Navbar("")   
     </body>
   </html>
 }
 
-templ Navbar() {
-  <div class="navbar bg-base-100">
+templ Navbar(account string) {
+  <div id="navbar" class="navbar bg-base-100">
     <div class="navbar-start">
       <a href="/" class="btn btn-ghost text-xl">NFT Marketplace</a>
     </div>
@@ -33,40 +32,85 @@ templ Navbar() {
     </div>
 
     <div class="navbar-end">
-      <a hx-post="/login" hx-swap="afterbegin" hx-target="body" class="btn btn-primary">Connect</a>
+      if account == "" {
+          <a class="btn btn-primary" onclick='connectWallect(this)'>Connect</a>
+      } else {
+        <div>{account}</div>
+      }
     </div>
   </div>
-
 }
 
-var connectScript = templ.NewOnceHandle()
-templ Login() {
-  <div id="login-model" class="absolute w-screen h-screen bg-slate-700 z-[999]">
-    @connectScript.Once() {
-      <script type="text/javascript">
-        async function loadProvider() {
-          const provider = new ethers.providers.Web3Provider(window.ethereum)
+var scriptsHandle = templ.NewOnceHandle()
+templ Scripts() {
+  @scriptsHandle.Once() {
+    <script type="text/javascript">   
+      var provider = window.ethereum;
+      var web3 = undefined;   
 
-          await provider.send("eth_requestAccounts", [])
+      async function connectWallect() {
+        try{
+          let accounts = await web3.send("eth_accounts", [])
+          if(accounts.length == 0){
+            accounts = await web3.send("eth_requestAccounts", [])
+            return
+          }
 
-          const signer = provider.getSigner()
-          console.log('Signer:', signer)
-          const address = await signer.getAddress()
-          console.log("Account:", address)
-        }
-
-        async function main(){
-          if (typeof window.ethereum !== 'undefined') {
-            await loadProvider()
+          provider.emit("accountsChanged", accounts)
+        }catch(err){  
+          console.error("connectAccount", err)
+          if(err.code === 4001){
+            alert(`Failed to connect metamask account: ${err.message}`)
           }
         }
+      }
 
-        main()
-      </script>
-    }
+      async function handleAccountsChanged(accounts) {
+        try{
+          console.log("handleAccountsChanged", accounts)
+          const account = accounts.length > 0 ? accounts[0] : ""
+          await htmx.ajax('POST', '/events/onAccountConnected', {
+            target:'#navbar', 
+            swap:'outerHTML', 
+            values: { account }
+          })
+        }catch(err){
+          console.error("handleAccountsChanged", err)
+        }
+      }
 
-    <div class="w-screen h-screen flex flex-col justify-center	items-center">
-      <div>CONNECTING...</div>
-    </div>
-  </div>
+      function connectMetaMask() {
+        const web3 = new ethers.providers.Web3Provider(provider)
+        if(!provider.isConnected) {
+          alert("Metamask is not connected to current chain, please reload the page and try again")
+          return
+        }
+
+        provider.on("_initialized", (connectInfo) => console.warn("_initialized not implemented", connectInfo));
+        provider.on("connect", (connectInfo) => console.warn("connect not implemented", connectInfo));
+        provider.on("accountsChanged", handleAccountsChanged);
+        provider.on("chainChanged", (chainId) => console.warn("chainChanged not implemented", chainId));
+        provider.on("disconnect", (error) => console.warn("disconnect not implemented", error));
+
+        return web3
+      }
+
+      function main(){
+        if(provider=== undefined) {
+          alert("No ethereum provider")
+          return
+        }
+        if(typeof window.ethereum.isMetaMask === "boolean" && window.ethereum.isMetaMask){
+          web3 = connectMetaMask(provider)
+        }
+
+        if(web3 === undefined){
+          alert("No web3 provider")
+          return;
+        }
+      }
+
+      main()
+    </script>
+  }
 }
