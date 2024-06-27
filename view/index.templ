@@ -1,0 +1,72 @@
+package component
+
+templ Index() {
+  <!DOCTYPE html>
+  <html lang="en" data-theme="dracula">
+    <head>
+      <meta charset="UTF-8"></meta>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+      <link href="assets/styles.css" rel="stylesheet"></link>
+      <script src="assets/htmx.min.js" type="application/javascript"></script>
+      <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+    </head>
+
+    <body class="w-screen h-screen">
+      <div id="main">
+        @Navbar()
+      </div>      
+    </body>
+  </html>
+}
+
+templ Navbar() {
+  <div class="navbar bg-base-100">
+    <div class="navbar-start">
+      <a href="/" class="btn btn-ghost text-xl">NFT Marketplace</a>
+    </div>
+
+    <div class="navbar-center">
+      <ul class="menu menu-horizontal bg-base-200 rounded-box">
+        <li><a>Market</a></li>
+        <li><a>My NFTs</a></li>
+      </ul>
+    </div>
+
+    <div class="navbar-end">
+      <a hx-post="/login" hx-swap="afterbegin" hx-target="body" class="btn btn-primary">Connect</a>
+    </div>
+  </div>
+
+}
+
+var connectScript = templ.NewOnceHandle()
+templ Login() {
+  <div id="login-model" class="absolute w-screen h-screen bg-slate-700 z-[999]">
+    @connectScript.Once() {
+      <script type="text/javascript">
+        async function loadProvider() {
+          const provider = new ethers.providers.Web3Provider(window.ethereum)
+
+          await provider.send("eth_requestAccounts", [])
+
+          const signer = provider.getSigner()
+          console.log('Signer:', signer)
+          const address = await signer.getAddress()
+          console.log("Account:", address)
+        }
+
+        async function main(){
+          if (typeof window.ethereum !== 'undefined') {
+            await loadProvider()
+          }
+        }
+
+        main()
+      </script>
+    }
+
+    <div class="w-screen h-screen flex flex-col justify-center	items-center">
+      <div>CONNECTING...</div>
+    </div>
+  </div>
+}

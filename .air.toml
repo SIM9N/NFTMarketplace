@@ -3,7 +3,7 @@ tmp_dir = "tmp"
 
 [build]
   bin = "./tmp/app/main"
-  cmd = "templ generate components && tailwindcss -i components/styles.css -o assets/styles.css -m && go build -o tmp/app/main ./cmd/app/main.go "
+  cmd = "templ generate components && tailwindcss -i view/styles.css -o assets/styles.css -m && go build -o tmp/app/main ./cmd/app/main.go "
   delay = 1000
   exclude_dir = ["tmp", "vendor"]
   exclude_file = []

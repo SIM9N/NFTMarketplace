@@ -8,7 +8,7 @@ import (
 
 	"net/http"
 
-	"github.com/Sim9n/nft-marketplace/components"
+	"github.com/Sim9n/nft-marketplace/view"
 	"github.com/joho/godotenv"
 )
 
@@ -28,7 +28,7 @@ func main() {
 		component.Index().Render(context.Background(), w)
 	})
 	mux.HandleFunc("POST /login", func(w http.ResponseWriter, r *http.Request) {
-		component.Index().Render(context.Background(), w)
+		component.Login().Render(context.Background(), w)
 	})
 
 	logger.Info("Server Started", "port", port)
