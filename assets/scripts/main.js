@@ -32,6 +32,15 @@ async function handleAccountsChanged(accounts) {
   }
 }
 
+async function handleConnect(connectInfo) {
+  const accounts = await web3.send("eth_accounts", [])
+  console.log("handleConnect, accounts:", accounts, "connectInfo:", connectInfo)
+  if(accounts.length <= 0) {
+    return
+  }
+  await handleAccountsChanged(accounts)
+}
+
 function connectMetaMask() {
   const web3 = new ethers.providers.Web3Provider(provider)
   if(!provider.isConnected) {
@@ -40,7 +49,7 @@ function connectMetaMask() {
   }
 
   provider.on("_initialized", (connectInfo) => console.warn("_initialized not implemented", connectInfo));
-  provider.on("connect", (connectInfo) => console.warn("connect not implemented", connectInfo));
+  provider.on("connect", handleConnect);
   provider.on("accountsChanged", handleAccountsChanged);
   provider.on("chainChanged", (chainId) => console.warn("chainChanged not implemented", chainId));
   provider.on("disconnect", (error) => console.warn("disconnect not implemented", error));
