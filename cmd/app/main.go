@@ -25,6 +25,8 @@ func main() {
 	mux.Handle("GET /assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets"))))
 
 	mux.HandleFunc("GET /", handlers.HandleIndex)
+	mux.HandleFunc("GET /market", handlers.HandleMarketPage)
+	mux.HandleFunc("GET /my-nft", handlers.HandleMyNFTPage)
 
 	mux.HandleFunc("POST /events/onAccountConnected", handlers.HandleAccountChangedEvent)
 

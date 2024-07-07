@@ -14,36 +14,9 @@ templ Index() {
 
     <body class="w-screen h-screen">
       @Navbar("")   
+      <div id="page">
+        @Market()
+      </div>
     </body>
   </html>
-}
-
-templ Navbar(account string) {
-  <div id="navbar" class="navbar bg-base-100">
-    <div class="navbar-start">
-      <a href="/" class="btn btn-ghost text-xl">NFT Marketplace</a>
-    </div>
-
-    <div class="navbar-center">
-      <ul class="menu menu-horizontal bg-base-200 rounded-box">
-        <li><a>Market</a></li>
-        <li><a>My NFTs</a></li>
-      </ul>
-    </div>
-
-    <div class="navbar-end">
-      if account == "" {
-        <a class="btn btn-primary" onclick='connectWallet(this)'>Connect</a>
-      } else {
-        <div>{account}</div>
-      }
-    </div>
-  </div>
-}
-
-var scriptsHandle = templ.NewOnceHandle()
-templ Scripts() {
-  @scriptsHandle.Once() {
-    <script type="text/javascript" src="assets/scripts/main.js"></script>
-  }
 }

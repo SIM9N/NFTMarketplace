@@ -1,0 +1,8 @@
+package view 
+
+var scriptsHandle = templ.NewOnceHandle()
+templ Scripts() {
+  @scriptsHandle.Once() {
+    <script type="text/javascript" src="assets/scripts/main.js"></script>
+  }
+}
