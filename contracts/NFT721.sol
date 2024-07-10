@@ -14,7 +14,7 @@ contract NFT721 is ERC721URIStorage, Ownable {
 
 	function mint(string memory tokenURI, uint price) external onlyOwner returns (uint) {
 		require(price > 0, "price must be a positive value");
-		uint tokenId = ++tokenCount;
+		uint tokenId = tokenCount++;
 		_safeMint(msg.sender, tokenId);
 		_setTokenURI(tokenId, tokenURI);
 

@@ -40,10 +40,10 @@ func (svc *NFT721Service) ListAll() []ItemData {
 		return []ItemData{}
 	}
 	items := make([]ItemData, count)
-	for i := 1; i <= int(count); i++ {
+	for i := 0; i < int(count); i++ {
 		item, err := svc.GetItemData(uint64(i))
 		if err == nil {
-			items[item.TokenId - 1] = item
+			items[item.TokenId] = item
 		}
 	}
 
