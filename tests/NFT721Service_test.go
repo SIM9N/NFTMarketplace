@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"fmt"
 	"math/big"
 	"os"
 	"testing"
@@ -21,6 +22,7 @@ func Test(t *testing.T) {
 	var (
 		url = os.Getenv("ETHER_URL")
 		privateKeyHex = os.Getenv("PRIVATE_KEY")
+		nftBaseURL = os.Getenv("NFT_BASE_URL")
 	)
 
 	addr, pk, err := web3.ImportWallet(privateKeyHex)
@@ -40,19 +42,23 @@ func Test(t *testing.T) {
 		t.Fatalf("Failed to Prepare Transaction: %v", err)
 	}
 
-	contractAddr, _, contract, err := NFT721.DeployNFT721(auth, client, addr)
+	contractAddr, _, contract, err := NFT721.DeployNFT721(auth, client, "MyNFT", "MyNFT")
 	if err != nil {
 		t.Fatalf("Failed to deploy contract: %v", err)
 	}
 	t.Logf("Deployed NFT721 at %s", contractAddr)
 
-	auth, err = web3.PrepareTransaction(client, addr, pk)
-	if err != nil {
-		t.Fatalf("Failed to Prepare Transaction: %v", err)
-	}
-	_, err = contract.Mint(auth, "testUrl", big.NewInt(int64(100000)))
-	if err != nil {
-		t.Fatalf("Failed to Mint: %v", err)
+	numOfNFTs := 5
+	initialPrice := big.NewInt(1000)
+	for i := 0; i < numOfNFTs; i++{
+		auth, err := web3.PrepareTransaction(client, addr, pk)
+		if err != nil {
+			t.Fatalf("Failed Prepare Transaction: %v", err)
+		}
+		_, err =contract.Mint(auth, fmt.Sprintf("%s%d.json", nftBaseURL, i), initialPrice)
+		if err == nil {
+			t.Logf("Minted NFT %d", i)
+		}
 	}
 
 	nft721Svc := services.NewNFT721Service(client, NFT721.NFT721ABI, contractAddr.String())

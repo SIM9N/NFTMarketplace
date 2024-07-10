@@ -1,12 +1,22 @@
 package services
 
 import (
+	"encoding/json"
+	"io"
 	"math/big"
+	"net/http"
 
 	contract "github.com/Sim9n/nft-marketplace/contracts/gen"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
+
+type ItemDataMetadata struct {
+	ID 	uint64 					`json:"id"`
+	Name string					`json:"name"`	
+	Description string	`json:"description"`	
+	Image string				`json:"image"`	
+}
 
 type ItemData struct {
 	TokenId uint64
@@ -14,6 +24,7 @@ type ItemData struct {
 	IsListing bool
 	Price uint64
 	Url string
+	MetaData ItemDataMetadata
 }
 
 type NFT721Service struct {
@@ -66,7 +77,6 @@ func (svc *NFT721Service) GetItemData(tokenId uint64) (ItemData, error) {
 		return ItemData{}, err
 	}
 
-
 	price, err := svc.nft721.NFT721Caller.Prices(nil, big.NewInt(int64(tokenId)))
 	if err != nil {
 		return ItemData{}, err
@@ -77,11 +87,37 @@ func (svc *NFT721Service) GetItemData(tokenId uint64) (ItemData, error) {
 		return ItemData{}, err
 	}
 
+	metaData, err := svc.fetchItemMetadata(tokenUrl)
+	if err != nil {
+		return ItemData{}, err
+	}
+
 	return ItemData{
 		TokenId: tokenId,
 		Owner: ownerAddr.String(),
 		IsListing: isListing,
 		Price: price.Uint64(),
 		Url: tokenUrl,
+		MetaData: metaData,
 	}, nil
+}
+
+func (svc *NFT721Service) fetchItemMetadata(url string) (ItemDataMetadata, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return ItemDataMetadata{}, err
+	}
+	body, err := io.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	if err != nil {
+		return ItemDataMetadata{}, err
+	}
+
+	metadata := &ItemDataMetadata{}
+	err = json.Unmarshal(body, metadata)
+	if err != nil {
+		return ItemDataMetadata{}, err
+	}
+	
+	return *metadata, nil
 }

@@ -10,7 +10,7 @@ contract NFT721 is ERC721URIStorage, Ownable {
 	mapping(uint => uint) public prices;
 	mapping(uint => bool) public isListing;
 	
-	constructor(address initialOwner) ERC721("NFT", "NFT") Ownable(initialOwner){}
+	constructor(string memory name, string memory symbol) ERC721(name, symbol) Ownable(msg.sender){}
 
 	function mint(string memory tokenURI, uint price) external onlyOwner returns (uint) {
 		require(price > 0, "price must be a positive value");
