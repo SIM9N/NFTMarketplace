@@ -9,7 +9,7 @@ import (
 	view "github.com/Sim9n/nft-marketplace/view"
 )
 
-func HandleAccountChangedEvent(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) HandleAccountChangedEvent(w http.ResponseWriter, r *http.Request) {
 	body, err := htmx.DecodeHTMXValue(r)
 	if err != nil {
 		slog.Warn("onAccountConnected failed to decode htmx value", "err", err)

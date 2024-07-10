@@ -7,6 +7,7 @@ import (
 	"github.com/Sim9n/nft-marketplace/view"
 )
 
-func HandleMarketPage(w http.ResponseWriter, r *http.Request) {
-	view.Market().Render(context.TODO(), w)
+func (h *Handler) HandleMarketPage(w http.ResponseWriter, r *http.Request) {
+	items := h.nft721Svc.ListAll()
+	view.Market(items).Render(context.TODO(), w)
 }
