@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 
-	htmx "github.com/Sim9n/nft-marketplace/utils"
+	htmx "github.com/Sim9n/nft-marketplace/utils/htmx"
 	view "github.com/Sim9n/nft-marketplace/view"
 )
 
