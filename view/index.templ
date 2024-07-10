@@ -1,5 +1,7 @@
 package view
 
+import "github.com/Sim9n/nft-marketplace/services"
+
 templ Index() {
   <!DOCTYPE html>
   <html lang="en" data-theme="dracula">
@@ -15,7 +17,7 @@ templ Index() {
     <body class="w-screen h-screen">
       @Navbar("")   
       <div id="page">
-        @Market()
+        @Market(make([]services.ItemData, 0))
       </div>
     </body>
   </html>

@@ -56,14 +56,8 @@ func Test(t *testing.T) {
 	}
 
 	nft721Svc := services.NewNFT721Service(client, NFT721.NFT721ABI, contractAddr.String())
-	count, err := nft721Svc.TokenCount()
-	if err != nil {
-		t.Fatalf("TokenCount error: %v", err)
-	}
-	t.Logf("tokenCount: %d", count)
-
-	for i := 1; i <= int(count); i++ {
-		data := nft721Svc.GetItemData(int64(i))
-		t.Logf("token(%d) %+v", i, data)
+	items := nft721Svc.ListAll()
+	for _, item := range items {
+		t.Logf("%+v", item)
 	}
 }

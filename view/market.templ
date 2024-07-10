@@ -1,7 +1,28 @@
 package view
 
-templ Market() {
+import "github.com/Sim9n/nft-marketplace/services"
+import "strconv"
+
+templ Market(items []services.ItemData) {
   <div>
     Market page
+    <div class="grid grid-cols-1 gap-4 grid-flow-row md:grid-cols-3  lg:grid-cols-3">
+      for _, item := range items {
+        <div class="card bg-base-100 w-96 shadow-xl">
+          <figure>
+            <img
+              src={item.Url}
+              alt="TODO" />
+          </figure>
+          <div class="card-body">
+            <h2 class="card-title">token {strconv.FormatInt(int64(item.TokenId), 10)}</h2>
+            <p class="text-ellipsis overflow-hidden	">Owner: {item.Owner} Url {item.Url} IsListing: {strconv.FormatBool(item.IsListing)} Price: {strconv.FormatUint(item.Price, 10)} </p>
+            <div class="card-actions justify-end">
+              <button class="btn btn-primary">Buy Now</button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
   </div>
 }

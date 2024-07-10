@@ -1,7 +1,6 @@
 package services
 
 import (
-	"log/slog"
 	"math/big"
 
 	contract "github.com/Sim9n/nft-marketplace/contracts/gen"
@@ -10,6 +9,7 @@ import (
 )
 
 type ItemData struct {
+	TokenId uint64
 	Owner string
 	IsListing bool
 	Price uint64
@@ -34,37 +34,54 @@ func NewNFT721Service(client *ethclient.Client, abi, address string) *NFT721Serv
 	}
 }
 
-func (svc *NFT721Service) TokenCount() (int64, error) {
-	count, err := svc.nft721.NFT721Caller.TokenCount(nil)
-	return count.Int64(), err
+func (svc *NFT721Service) ListAll() []ItemData {
+	count, err := svc.TokenCount()
+	if err != nil {
+		return []ItemData{}
+	}
+	items := make([]ItemData, count)
+	for i := 1; i <= int(count); i++ {
+		item, err := svc.GetItemData(uint64(i))
+		if err == nil {
+			items[item.TokenId - 1] = item
+		}
+	}
+
+	return items
 }
 
-func (svc *NFT721Service) GetItemData(tokenId int64) ItemData {
-	ownerAddr, err := svc.nft721.NFT721Caller.OwnerOf(nil, big.NewInt(tokenId))
+func (svc *NFT721Service) TokenCount() (uint64, error) {
+	count, err := svc.nft721.NFT721Caller.TokenCount(nil)
+	return count.Uint64(), err
+}
+
+func (svc *NFT721Service) GetItemData(tokenId uint64) (ItemData, error) {
+	ownerAddr, err := svc.nft721.NFT721Caller.OwnerOf(nil, big.NewInt(int64(tokenId)))
 	if err != nil {
-		slog.Error("GetItemData OwnerOf", "error", err)
+		return ItemData{}, err
 	}
 
-	isListing, err := svc.nft721.NFT721Caller.IsListing(nil, big.NewInt(tokenId))
+	isListing, err := svc.nft721.NFT721Caller.IsListing(nil, big.NewInt(int64(tokenId)))
 	if err != nil {
-		slog.Error("GetItemData IsListing", "error", err)
+		return ItemData{}, err
 	}
 
 
-	price, err := svc.nft721.NFT721Caller.Prices(nil, big.NewInt(tokenId))
+	price, err := svc.nft721.NFT721Caller.Prices(nil, big.NewInt(int64(tokenId)))
 	if err != nil {
-		slog.Error("GetItemData Prices", "error", err)
+		return ItemData{}, err
 	}
 
-	tokenUrl, err := svc.nft721.NFT721Caller.TokenURI(nil, big.NewInt(tokenId))
+	tokenUrl, err := svc.nft721.NFT721Caller.TokenURI(nil, big.NewInt(int64(tokenId)))
 	if err != nil {
-		slog.Error("GetItemData TokenUrl", "error", err)
+		return ItemData{}, err
 	}
 
 	return ItemData{
+		TokenId: tokenId,
 		Owner: ownerAddr.String(),
 		IsListing: isListing,
 		Price: price.Uint64(),
 		Url: tokenUrl,
-	}
+	}, nil
 }
