@@ -1,14 +1,12 @@
-package test
+package services
 
 import (
 	"context"
 	"fmt"
-	"math/big"
 	"os"
 	"testing"
 
 	NFT721 "github.com/Sim9n/nft-marketplace/contracts/gen"
-	"github.com/Sim9n/nft-marketplace/services"
 	"github.com/Sim9n/nft-marketplace/utils/web3"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/joho/godotenv"
@@ -48,20 +46,11 @@ func Test(t *testing.T) {
 	}
 	t.Logf("Deployed NFT721 at %s", contractAddr)
 
-	numOfNFTs := 5
-	initialPrice := big.NewInt(1000)
-	for i := 0; i < numOfNFTs; i++ {
-		auth, err := web3.PrepareTransaction(client, addr, pk)
-		if err != nil {
-			t.Fatalf("Failed Prepare Transaction: %v", err)
-		}
-		_, err = contract.Mint(auth, fmt.Sprintf("%s/%d.json", nftBaseURL, i), initialPrice)
-		if err == nil {
-			t.Logf("Minted NFT %d", i)
-		}
+	if err := web3.MintNFTs(client, addr, pk, nftBaseURL, contract); err != nil {
+		t.Error(err)
 	}
 
-	nft721Svc := services.NewNFT721Service(client, NFT721.NFT721ABI, contractAddr.String())
+	nft721Svc := NewNFT721Service(client, NFT721.NFT721ABI, contractAddr.String())
 	items := nft721Svc.ListAll()
 	for _, item := range items {
 		fmt.Printf("%+v\n", item)

@@ -2,9 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
-	"math/big"
 	"os"
 
 	NFT721 "github.com/Sim9n/nft-marketplace/contracts/gen"
@@ -42,22 +40,13 @@ func main() {
 		log.Fatalf("Failed Prepare Transaction: %v", err)
 	}
 
-	txAddr, tx, contract, err := NFT721.DeployNFT721(auth, client, "SIMON_MOK_NFT", "SM_NFT")
+	txAddr, tx, contract, err := NFT721.DeployNFT721(auth, client, "EMOTION_NFT", "EMO")
 	if err != nil {
 		log.Fatalf("Failed to deploy contract: %v", err)
 	}
 
-	numOfNFTs := 5
-	initialPrice := big.NewInt(1000)
-	for i := 0; i < numOfNFTs; i++ {
-		auth, err := web3.PrepareTransaction(client, address, privateKey)
-		if err != nil {
-			log.Fatalf("Failed Prepare Transaction: %v", err)
-		}
-		_, err = contract.Mint(auth, fmt.Sprintf("%s/%d.json", nftBaseURL, i), initialPrice)
-		if err == nil {
-			log.Printf("Minted NFT %d", i)
-		}
+	if err := web3.MintNFTs(client, address, privateKey, nftBaseURL, contract); err != nil {
+		log.Fatalf("Failed to mint NFTs error %+v", err)
 	}
 
 	log.Println("Contract Address", txAddr.Hex())
