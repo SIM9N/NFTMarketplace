@@ -1,0 +1,12 @@
+{
+  "id": 0,
+  "name": "Anger",
+  "description": "A Anger Face",
+  "image": "http://localhost:8080/ipfs/QmSoxoWLxsZdapBwXkVF8YBtU6PBcdYDKb2ZUP8AVaJWko",
+  "attributes": [
+    {
+      "type": "emotion",
+      "value": "anger"
+    }
+  ]
+}

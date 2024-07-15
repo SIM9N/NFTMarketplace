@@ -55,7 +55,7 @@ func Test(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Failed Prepare Transaction: %v", err)
 		}
-		_, err = contract.Mint(auth, fmt.Sprintf("%s%d.json", nftBaseURL, i), initialPrice)
+		_, err = contract.Mint(auth, fmt.Sprintf("%s/%d.json", nftBaseURL, i), initialPrice)
 		if err == nil {
 			t.Logf("Minted NFT %d", i)
 		}
@@ -64,6 +64,6 @@ func Test(t *testing.T) {
 	nft721Svc := services.NewNFT721Service(client, NFT721.NFT721ABI, contractAddr.String())
 	items := nft721Svc.ListAll()
 	for _, item := range items {
-		t.Logf("%+v", item)
+		fmt.Printf("%+v\n", item)
 	}
 }

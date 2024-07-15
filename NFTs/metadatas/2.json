@@ -1,0 +1,12 @@
+{
+  "id": 0,
+  "name": "Joy",
+  "description": "A Joy Face",
+  "image": "http://localhost:8080/ipfs/QmRxSGUSJdDnHBrCGxxdfXjX52gZm4otFrNVML1eKu7hBP",
+  "attributes": [
+    {
+      "type": "emotion",
+      "value": "joy"
+    }
+  ]
+}

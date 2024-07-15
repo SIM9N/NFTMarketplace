@@ -1,0 +1,12 @@
+{
+  "id": 0,
+  "name": "Disgust",
+  "description": "A Disgust Face",
+  "image": "http://localhost:8080/ipfs/QmT5zLeSjdJvqMwGBabFgfi4LhjCVYetuaj7VayAZAYntb",
+  "attributes": [
+    {
+      "type": "emotion",
+      "value": "disgust"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "id": 0,
+  "name": "Fear",
+  "description": "A Fear Face",
+  "image": "http://localhost:8080/ipfs/QmZgTNTt4toeES12CPRmnmqTqwFiXSqDjoTgUabJ9KURoH",
+  "attributes": [
+    {
+      "type": "emotion",
+      "value": "fear"
+    }
+  ]
+}

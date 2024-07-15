@@ -1,0 +1,12 @@
+{
+  "id": 0,
+  "name": "Sadness",
+  "description": "A Sadness Face",
+  "image": "http://localhost:8080/ipfs/QmQnKN6sdzLXVdun2QZ75oJdmmWneRVNruJEFLa94B7KW4",
+  "attributes": [
+    {
+      "type": "emotion",
+      "value": "sadness"
+    }
+  ]
+}

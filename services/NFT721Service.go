@@ -2,7 +2,7 @@ package services
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 	"log/slog"
 	"math/big"
 	"net/http"
@@ -122,7 +122,7 @@ func (svc *NFT721Service) fetchItemMetadata(url string) (*ItemDataMetadata, erro
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New("failed to fetch item metadata, non-200 status code")
+		return nil, fmt.Errorf("failed to fetch item metadata at %s, non-200 status code", url)
 	}
 
 	metadata := &ItemDataMetadata{}
