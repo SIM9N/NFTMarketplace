@@ -12,25 +12,25 @@ import (
 )
 
 type ItemDataMetadata struct {
-	ID 	uint64 					`json:"id"`
-	Name string					`json:"name"`	
-	Description string	`json:"description"`	
-	Image string				`json:"image"`	
+	ID          uint64 `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Image       string `json:"image"`
 }
 
 type ItemData struct {
-	TokenId uint64
-	Owner string
+	TokenId   uint64
+	Owner     string
 	IsListing bool
-	Price uint64
-	Url string
-	MetaData ItemDataMetadata
+	Price     uint64
+	Url       string
+	MetaData  ItemDataMetadata
 }
 
 type NFT721Service struct {
 	etherClient *ethclient.Client
-	abi string
-	nft721 *contract.NFT721
+	abi         string
+	nft721      *contract.NFT721
 }
 
 func NewNFT721Service(client *ethclient.Client, abi, address string) *NFT721Service {
@@ -50,6 +50,7 @@ func (svc *NFT721Service) ListAll() []ItemData {
 	if err != nil {
 		return []ItemData{}
 	}
+
 	items := make([]ItemData, count)
 	for i := 0; i < int(count); i++ {
 		item, err := svc.GetItemData(uint64(i))
@@ -93,12 +94,12 @@ func (svc *NFT721Service) GetItemData(tokenId uint64) (ItemData, error) {
 	}
 
 	return ItemData{
-		TokenId: tokenId,
-		Owner: ownerAddr.String(),
+		TokenId:   tokenId,
+		Owner:     ownerAddr.String(),
 		IsListing: isListing,
-		Price: price.Uint64(),
-		Url: tokenUrl,
-		MetaData: metaData,
+		Price:     price.Uint64(),
+		Url:       tokenUrl,
+		MetaData:  metaData,
 	}, nil
 }
 
@@ -118,6 +119,6 @@ func (svc *NFT721Service) fetchItemMetadata(url string) (ItemDataMetadata, error
 	if err != nil {
 		return ItemDataMetadata{}, err
 	}
-	
+
 	return *metadata, nil
 }

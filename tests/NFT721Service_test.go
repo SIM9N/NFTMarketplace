@@ -20,9 +20,9 @@ func Test(t *testing.T) {
 	}
 
 	var (
-		url = os.Getenv("ETHER_URL")
+		url           = os.Getenv("ETHER_URL")
 		privateKeyHex = os.Getenv("PRIVATE_KEY")
-		nftBaseURL = os.Getenv("NFT_BASE_URL")
+		nftBaseURL    = os.Getenv("NFT_BASE_URL")
 	)
 
 	addr, pk, err := web3.ImportWallet(privateKeyHex)
@@ -50,12 +50,12 @@ func Test(t *testing.T) {
 
 	numOfNFTs := 5
 	initialPrice := big.NewInt(1000)
-	for i := 0; i < numOfNFTs; i++{
+	for i := 0; i < numOfNFTs; i++ {
 		auth, err := web3.PrepareTransaction(client, addr, pk)
 		if err != nil {
 			t.Fatalf("Failed Prepare Transaction: %v", err)
 		}
-		_, err =contract.Mint(auth, fmt.Sprintf("%s%d.json", nftBaseURL, i), initialPrice)
+		_, err = contract.Mint(auth, fmt.Sprintf("%s%d.json", nftBaseURL, i), initialPrice)
 		if err == nil {
 			t.Logf("Minted NFT %d", i)
 		}

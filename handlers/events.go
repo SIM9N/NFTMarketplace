@@ -17,7 +17,7 @@ func (h *Handler) HandleAccountChangedEvent(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	account, ok := body["account"].(string); 
+	account, ok := body["account"].(string)
 	if !ok {
 		slog.Warn("onAccountConnected account is not a string", "account", body["account"])
 		view.Navbar("").Render(context.Background(), w)
