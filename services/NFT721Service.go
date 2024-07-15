@@ -2,9 +2,11 @@ package services
 
 import (
 	"encoding/json"
-	"io"
+	"errors"
+	"log/slog"
 	"math/big"
 	"net/http"
+	"sync"
 
 	contract "github.com/Sim9n/nft-marketplace/contracts/gen"
 	"github.com/ethereum/go-ethereum/common"
@@ -24,7 +26,7 @@ type ItemData struct {
 	IsListing bool
 	Price     uint64
 	Url       string
-	MetaData  ItemDataMetadata
+	MetaData  *ItemDataMetadata
 }
 
 type NFT721Service struct {
@@ -45,20 +47,25 @@ func NewNFT721Service(client *ethclient.Client, abi, address string) *NFT721Serv
 	}
 }
 
-func (svc *NFT721Service) ListAll() []ItemData {
+func (svc *NFT721Service) ListAll() []*ItemData {
 	count, err := svc.TokenCount()
 	if err != nil {
-		return []ItemData{}
+		return []*ItemData{}
 	}
 
-	items := make([]ItemData, count)
+	items := make([]*ItemData, count)
+	wg := sync.WaitGroup{}
 	for i := 0; i < int(count); i++ {
-		item, err := svc.GetItemData(uint64(i))
-		if err == nil {
-			items[item.TokenId] = item
-		}
+		wg.Add(1)
+		go func() {
+			item, err := svc.GetItemData(uint64(i))
+			if err == nil {
+				items[item.TokenId] = item
+			}
+			wg.Done()
+		}()
 	}
-
+	wg.Wait()
 	return items
 }
 
@@ -67,33 +74,38 @@ func (svc *NFT721Service) TokenCount() (uint64, error) {
 	return count.Uint64(), err
 }
 
-func (svc *NFT721Service) GetItemData(tokenId uint64) (ItemData, error) {
+func (svc *NFT721Service) GetItemData(tokenId uint64) (*ItemData, error) {
 	ownerAddr, err := svc.nft721.NFT721Caller.OwnerOf(nil, big.NewInt(int64(tokenId)))
 	if err != nil {
-		return ItemData{}, err
+		slog.Error("GetItemData failed to fetch owner address", "tokenId", tokenId, "error", err)
+		return nil, err
 	}
 
 	isListing, err := svc.nft721.NFT721Caller.IsListing(nil, big.NewInt(int64(tokenId)))
 	if err != nil {
-		return ItemData{}, err
+		slog.Error("GetItemData failed to fetch IsListing", "tokenId", tokenId, "error", err)
+		return nil, err
 	}
 
 	price, err := svc.nft721.NFT721Caller.Prices(nil, big.NewInt(int64(tokenId)))
 	if err != nil {
-		return ItemData{}, err
+		slog.Error("GetItemData failed to fetch Prices", "tokenId", tokenId, "error", err)
+		return nil, err
 	}
 
 	tokenUrl, err := svc.nft721.NFT721Caller.TokenURI(nil, big.NewInt(int64(tokenId)))
 	if err != nil {
-		return ItemData{}, err
+		slog.Error("GetItemData failed to fetch TokenURI", "tokenId", tokenId, "error", err)
+		return nil, err
 	}
 
 	metaData, err := svc.fetchItemMetadata(tokenUrl)
 	if err != nil {
-		return ItemData{}, err
+		slog.Error("GetItemData failed to fetch item metadata", "tokenId", tokenId, "error", err)
+		return nil, err
 	}
 
-	return ItemData{
+	return &ItemData{
 		TokenId:   tokenId,
 		Owner:     ownerAddr.String(),
 		IsListing: isListing,
@@ -103,22 +115,21 @@ func (svc *NFT721Service) GetItemData(tokenId uint64) (ItemData, error) {
 	}, nil
 }
 
-func (svc *NFT721Service) fetchItemMetadata(url string) (ItemDataMetadata, error) {
+func (svc *NFT721Service) fetchItemMetadata(url string) (*ItemDataMetadata, error) {
 	resp, err := http.Get(url)
 	if err != nil {
-		return ItemDataMetadata{}, err
+		return nil, err
 	}
-	body, err := io.ReadAll(resp.Body)
-	defer resp.Body.Close()
-	if err != nil {
-		return ItemDataMetadata{}, err
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New("failed to fetch item metadata, non-200 status code")
 	}
 
 	metadata := &ItemDataMetadata{}
-	err = json.Unmarshal(body, metadata)
+	err = json.NewDecoder(resp.Body).Decode(metadata)
 	if err != nil {
-		return ItemDataMetadata{}, err
+		return nil, err
 	}
 
-	return *metadata, nil
+	return metadata, nil
 }
