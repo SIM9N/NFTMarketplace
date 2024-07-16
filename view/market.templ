@@ -5,29 +5,27 @@ import "strconv"
 
 templ Market(items []*services.ItemData) {
 	<div>
-		Market page
-		<div class="grid grid-cols-1 gap-4 grid-flow-row md:grid-cols-3  lg:grid-cols-3">
+		<div class="text-5xl m-6">Market</div>
+		<div class="grid grid-cols-3 gap-4 grid-flow-row mt-8">
 			for _, item := range items {
 				if item != nil {
-					<div class="card bg-base-100 w-96 shadow-xl">
+					<div class="card card-bordered w-96 shadow-xl justify-self-center">
 						<figure>
 							<img
 								src={ item.MetaData.Image }
-								alt="TODO"
+								alt="Not found"
 							/>
 						</figure>
 						<div class="card-body">
 							<h2 class="card-title">{ item.MetaData.Name }</h2>
 							<p class="text-ellipsis overflow-hidden	">
-								Owner: { item.Owner }
-								Url { item.Url }
-								IsListing: { strconv.FormatBool(item.IsListing) }
-								Price: { strconv.FormatUint(item.Price, 10) }
-								Description: { item.MetaData.Description }
-								Image: { item.MetaData.Image }
+								{ item.MetaData.Description }
 							</p>
-							<div class="card-actions justify-end">
-								<button class="btn btn-primary">Buy Now</button>
+							<div class="card-actions">
+								<p class="self-end font-bold text-2xl">{ strconv.FormatFloat(item.Price, 'f', -1, 64) } Eth</p>
+								if item.IsListing {
+									<button class="btn btn-primary">Buy</button>
+								}
 							</div>
 						</div>
 					</div>

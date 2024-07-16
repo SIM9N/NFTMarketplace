@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"context"
 	"log/slog"
 	"net/http"
 
@@ -21,47 +20,47 @@ func New(nft721Svc *services.NFT721Service) *Handler {
 }
 
 func (h *Handler) HandleIndex(w http.ResponseWriter, r *http.Request) {
-	view.Index().Render(context.Background(), w)
+	view.Index().Render(r.Context(), w)
 }
 
 func (h *Handler) HandleMarketPage(w http.ResponseWriter, r *http.Request) {
 	items := h.nft721Svc.ListAll()
-	view.Market(items).Render(context.TODO(), w)
+	view.Market(items).Render(r.Context(), w)
 }
 
 func (h *Handler) HandleMyNFTPage(w http.ResponseWriter, r *http.Request) {
 	query, err := htmx.DecodeHTMXQuery(r)
 	if err != nil {
-		slog.Error("HandleMyNFTPage failed to decode htmx value", "err", err)
-		view.MyNFT([]*services.ItemData{}).Render(context.TODO(), w)
+		slog.Warn("HandleMyNFTPage failed to decode htmx query params", "err", err)
+		view.MyNFT([]*services.ItemData{}).Render(r.Context(), w)
 		return
 	}
 
 	account, ok := query["account"].(string)
 	if !ok {
-		slog.Error("HandleMyNFTPage account is not a string", "account", query["account"])
-		view.MyNFT([]*services.ItemData{}).Render(context.TODO(), w)
+		slog.Warn("HandleMyNFTPage account is not a string", "account", query["account"])
+		view.MyNFT([]*services.ItemData{}).Render(r.Context(), w)
 		return
 	}
 
 	items := h.nft721Svc.ListByAddr(account)
-	view.MyNFT(items).Render(context.TODO(), w)
+	view.MyNFT(items).Render(r.Context(), w)
 }
 
 func (h *Handler) HandleAccountChangedEvent(w http.ResponseWriter, r *http.Request) {
 	body, err := htmx.DecodeHTMXBody(r)
 	if err != nil {
-		slog.Warn("onAccountConnected failed to decode htmx value", "err", err)
-		view.Navbar("").Render(context.Background(), w)
+		slog.Warn("onAccountConnected failed to decode htmx body params", "err", err)
+		view.Navbar("").Render(r.Context(), w)
 		return
 	}
 
 	account, ok := body["account"].(string)
 	if !ok {
 		slog.Warn("onAccountConnected account is not a string", "account", body["account"])
-		view.Navbar("").Render(context.Background(), w)
+		view.Navbar("").Render(r.Context(), w)
 		return
 	}
 
-	view.Navbar(account).Render(context.Background(), w)
+	view.Navbar(account).Render(r.Context(), w)
 }

@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	contract "github.com/Sim9n/nft-marketplace/contracts/gen"
+	"github.com/Sim9n/nft-marketplace/utils/web3"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
@@ -25,7 +26,7 @@ type ItemData struct {
 	TokenId   uint64
 	Owner     string
 	IsListing bool
-	Price     uint64
+	Price     float64
 	Url       string
 	MetaData  *ItemDataMetadata
 }
@@ -110,11 +111,14 @@ func (svc *NFT721Service) GetItemData(tokenId uint64) (*ItemData, error) {
 		return nil, err
 	}
 
-	price, err := svc.nft721.NFT721Caller.Prices(nil, big.NewInt(int64(tokenId)))
+	priceInWei, err := svc.nft721.NFT721Caller.Prices(nil, big.NewInt(int64(tokenId)))
 	if err != nil {
 		slog.Error("GetItemData failed to fetch Prices", "tokenId", tokenId, "error", err)
 		return nil, err
 	}
+
+	priceInEther := web3.WeiToEther(priceInWei)
+	price, _ := priceInEther.Float64()
 
 	tokenUrl, err := svc.nft721.NFT721Caller.TokenURI(nil, big.NewInt(int64(tokenId)))
 	if err != nil {
@@ -132,7 +136,7 @@ func (svc *NFT721Service) GetItemData(tokenId uint64) (*ItemData, error) {
 		TokenId:   tokenId,
 		Owner:     ownerAddr.String(),
 		IsListing: isListing,
-		Price:     price.Uint64(),
+		Price:     price,
 		Url:       tokenUrl,
 		MetaData:  metaData,
 	}, nil
