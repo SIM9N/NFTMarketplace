@@ -21,10 +21,10 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal(err)
 	}
-	
+
 	var (
-		port = os.Getenv("LISTEN_ADDRESS")
-		url = os.Getenv("ETHER_URL")
+		port         = os.Getenv("LISTEN_ADDRESS")
+		url          = os.Getenv("ETHER_URL")
 		contractAddr = os.Getenv("CONTRACT_ADDRESS")
 	)
 

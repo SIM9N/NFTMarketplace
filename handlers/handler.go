@@ -30,11 +30,26 @@ func (h *Handler) HandleMarketPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) HandleMyNFTPage(w http.ResponseWriter, r *http.Request) {
-	view.MyNFT().Render(context.TODO(), w)
+	query, err := htmx.DecodeHTMXQuery(r)
+	if err != nil {
+		slog.Error("HandleMyNFTPage failed to decode htmx value", "err", err)
+		view.MyNFT([]*services.ItemData{}).Render(context.TODO(), w)
+		return
+	}
+
+	account, ok := query["account"].(string)
+	if !ok {
+		slog.Error("HandleMyNFTPage account is not a string", "account", query["account"])
+		view.MyNFT([]*services.ItemData{}).Render(context.TODO(), w)
+		return
+	}
+
+	items := h.nft721Svc.ListByAddr(account)
+	view.MyNFT(items).Render(context.TODO(), w)
 }
 
 func (h *Handler) HandleAccountChangedEvent(w http.ResponseWriter, r *http.Request) {
-	body, err := htmx.DecodeHTMXValue(r)
+	body, err := htmx.DecodeHTMXBody(r)
 	if err != nil {
 		slog.Warn("onAccountConnected failed to decode htmx value", "err", err)
 		view.Navbar("").Render(context.Background(), w)
@@ -48,6 +63,5 @@ func (h *Handler) HandleAccountChangedEvent(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	slog.Info("onAccountConnected", "account", account)
 	view.Navbar(account).Render(context.Background(), w)
 }

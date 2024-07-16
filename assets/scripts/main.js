@@ -1,5 +1,6 @@
 var provider = window.ethereum;
 var web3 = undefined;   
+var userAccount = undefined
 
 async function connectWallet() {
   try{
@@ -21,11 +22,11 @@ async function connectWallet() {
 async function handleAccountsChanged(accounts) {
   try{
     console.log("handleAccountsChanged", accounts)
-    const account = accounts.length > 0 ? accounts[0] : ""
+    userAccount = accounts.length > 0 ? accounts[0] : undefined
     await htmx.ajax('POST', '/events/onAccountConnected', {
       target:'#navbar', 
       swap:'outerHTML', 
-      values: { account }
+      values: { account: userAccount }
     })
   }catch(err){
     console.error("handleAccountsChanged", err)

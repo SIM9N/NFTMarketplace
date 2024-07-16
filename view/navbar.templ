@@ -1,26 +1,24 @@
 package view 
 
 templ Navbar(account string) {
-  <div id="navbar" class="navbar bg-base-100">
-    <div class="navbar-start">
-      <a href="/" class="btn btn-ghost text-xl">NFT Marketplace</a>
-    </div>
-
-    <div class="navbar-center">
-      <ul class="menu menu-horizontal bg-base-200 rounded-box">
-        <li><a hx-get="/market" hx-target="#page" hx-swap="innerHTML">Market</a></li>
-        if len(account) != 0 {
-          <li><a hx-get="/my-nft" hx-target="#page" hx-swap="innerHTML">My NFTs</a></li>
-        }
-      </ul>
-    </div>
-
-    <div class="navbar-end">
-      if len(account) == 0 {
-        <a class="btn btn-primary" onclick='connectWallet(this)'>Connect</a>
-      } else {
-        <div>{account}</div>
-      }
-    </div>
-  </div>
+	<div id="navbar" class="navbar bg-base-100">
+		<div class="navbar-start">
+			<a href="/" class="btn btn-ghost text-xl">NFT Marketplace</a>
+		</div>
+		<div class="navbar-center">
+			<ul class="menu menu-horizontal bg-base-200 rounded-box">
+				<li><a hx-get="/market" hx-target="#page" hx-swap="innerHTML">Market</a></li>
+				if len(account) != 0 {
+					<li><a hx-get="/my-nft" hx-target="#page" hx-swap="innerHTML" hx-vals='js:{"account": userAccount}'>My NFTs</a></li>
+				}
+			</ul>
+		</div>
+		<div class="navbar-end">
+			if len(account) == 0 {
+				<a class="btn btn-primary" onclick="connectWallet(this)">Connect</a>
+			} else {
+				<div>{ account }</div>
+			}
+		</div>
+	</div>
 }

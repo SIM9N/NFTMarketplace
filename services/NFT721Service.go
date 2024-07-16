@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"math/big"
 	"net/http"
+	"strings"
 	"sync"
 
 	contract "github.com/Sim9n/nft-marketplace/contracts/gen"
@@ -61,6 +62,28 @@ func (svc *NFT721Service) ListAll() []*ItemData {
 			item, err := svc.GetItemData(uint64(i))
 			if err == nil {
 				items[item.TokenId] = item
+			}
+			wg.Done()
+		}()
+	}
+	wg.Wait()
+	return items
+}
+
+func (svc *NFT721Service) ListByAddr(addr string) []*ItemData {
+	count, err := svc.TokenCount()
+	if err != nil {
+		return []*ItemData{}
+	}
+
+	items := []*ItemData{}
+	wg := sync.WaitGroup{}
+	for i := 0; i < int(count); i++ {
+		wg.Add(1)
+		go func() {
+			item, err := svc.GetItemData(uint64(i))
+			if err == nil && strings.ToLower(item.Owner) == addr {
+				items = append(items, item)
 			}
 			wg.Done()
 		}()
